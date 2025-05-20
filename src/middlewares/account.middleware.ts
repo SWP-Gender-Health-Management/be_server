@@ -14,7 +14,8 @@ export const validateRegister = validate(
       custom: {
         options: async (value, { req }) => {
           const user = await accountService.checkEmailExist(value)
-          if (user) {
+          console.log(typeof user)
+          if (!user.isEmpty()) {
             throw new Error(USERS_MESSAGES.EMAIL_ALREADY_EXIST)
           }
           return true
