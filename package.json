@@ -34,9 +34,15 @@
     "typescript-eslint": "^8.32.1"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/passport": "^1.0.17",
+    "argon2": "^0.43.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "pg": "^8.16.0"
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "pg": "^8.16.0",
+    "randexp": "^0.5.3"
   }
 }

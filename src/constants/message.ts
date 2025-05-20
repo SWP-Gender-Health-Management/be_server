@@ -23,5 +23,6 @@ export const USERS_MESSAGES = {
   PASSWORD_MUST_BE_AT_LEAST_6_CHARACTERS: 'Password must be at least 6 characters long',
   PASSWORD_INVALID: 'Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
   CONFIRM_PASSWORD_MUST_MATCH: 'Confirm password must match password',
-  USER_REGISTERED_SUCCESS: 'User registered successfully'
+  USER_REGISTERED_SUCCESS: 'User registered successfully',
+  CRYPTO_ERROR: 'Error hashing password'
 }
