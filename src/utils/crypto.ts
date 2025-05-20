@@ -9,3 +9,7 @@ export async function hashPassword(password: string) {
   }
   return await argon2.hash(password, options)
 }
+
+export async function verifyPassword(password: string, hash: string) {
+  return await argon2.verify(hash, password)
+}

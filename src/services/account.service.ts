@@ -1,6 +1,6 @@
 import Account from '~/models/Entity/Account.entity'
 import db_service from './database.service'
-import { hashPassword } from '~/utils/crypto'
+import { hashPassword, verifyPassword } from '~/utils/crypto'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { signToken } from '~/utils/jwt'
 import { config } from 'dotenv'
@@ -10,7 +10,14 @@ config()
 class AccountService {
   async checkEmailExist(email: string) {
     const user = await db_service.query('SELECT * FROM Account WHERE email = $1', [email])
-    return user.rows.length > 0 ? user.rows[0].account_id : null
+    return user.rows.length > 0 ? user.rows[0] : null
+  }
+
+  async checkPassword(account_id: string, password: string) {
+    const user = await db_service.query('SELECT * FROM Account WHERE account_id = $1', [account_id])
+
+    const isPasswordValid = await verifyPassword(password, user.rows[0].password)
+    return isPasswordValid
   }
 
   async getLength(): Promise<number> {
@@ -75,6 +82,16 @@ class AccountService {
       accessToken,
       refreshToken
     }
+  }
+
+  async login(payload: any) {
+    const { account_id, password } = payload
+    const [accessToken, refreshToken] = await Promise.all([
+      this.createAccessToken({ account_id, password }),
+      this.createRefreshToken({ account_id, password })
+    ])
+    payload.refresh_token = refreshToken
+    return { accessToken, refreshToken }
   }
 }
 
