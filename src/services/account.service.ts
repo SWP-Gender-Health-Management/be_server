@@ -127,6 +127,19 @@ class AccountService {
 
     return { accessToken, refreshToken }
   }
+
+  async deleteAnAccountById(id: string) {
+    const tmp = await db_service.query('DELETE FROM Account WHERE account_id = $1', [id]);
+    return tmp.rows[0];
+  }
+
+  async getAccountsList(id: any) {
+    
+  }
+
+  async updateAccount(id: any) {
+    
+  }
 }
 
 const accountService = new AccountService()
