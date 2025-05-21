@@ -3,6 +3,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Error'
 import accountService from '~/services/account.service'
+import { verifyPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validations'
 
 export const validateRegister = validate(
@@ -14,7 +15,8 @@ export const validateRegister = validate(
       custom: {
         options: async (value, { req }) => {
           const user = await accountService.checkEmailExist(value)
-          if (user) {
+          console.log(typeof user)
+          if (!user.isEmpty()) {
             throw new Error(USERS_MESSAGES.EMAIL_ALREADY_EXIST)
           }
           return true
@@ -47,6 +49,36 @@ export const validateRegister = validate(
           }
           return true
         }
+      }
+    }
+  })
+)
+
+export const validateLogin = validate(
+  checkSchema({
+    email: {
+      isEmail: {
+        errorMessage: 'Email must be a valid email address'
+      },
+      custom: {
+        options: async (value, { req }) => {
+          const [user, isPasswordValid] = await Promise.all([
+            accountService.checkEmailExist(value),
+            verifyPassword(value, req.body.password)
+          ])
+          if (!user || !isPasswordValid) {
+            throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_INVALID)
+          }
+          req.body.account_id = user.account_id
+          req.body.password = user.password
+          return true
+        }
+      }
+    },
+    password: {
+      isLength: {
+        options: { min: 6 },
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_AT_LEAST_6_CHARACTERS
       }
     }
   })

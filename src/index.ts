@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import express from 'express'
-import pool from './services/database.service'
+
+import 'reflect-metadata'
 import dotenv from 'dotenv'
 import accountRoute from './routes/account.route'
 import consultantRoute from './routes/consultant.route'
@@ -8,6 +9,7 @@ import { createConnection } from 'typeorm';
 import userRoutes from './routes/user.route'
 
 dotenv.config()
+
 const app = express()
 
 app.use(express.json())
