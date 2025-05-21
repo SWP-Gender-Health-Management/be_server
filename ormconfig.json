@@ -1,20 +1,20 @@
 {
   "type": "postgres",
-  "host": "localhost",
-  "port": 5431,
+  "host": "157.245.50.188",
+  "port": 5432,
   "username": "postgres",
-  "password": "mysecretpassword",
+  "password": "root@123456",
   "database": "postgres",
-  "synchronize": false, // Chỉ nên để true trong quá trình phát triển
-  "logging": false,
+  "synchronize": true, 
+  "logging": true,
   "entities": [
-    "dist/entity/*.js" // Đường dẫn đến các tệp entity đã được biên dịch
+    "src/models/Entity/**/*.ts" 
   ],
   "migrations": [
-    "dist/migration/*.js" // Đường dẫn đến các tệp migration đã được biên dịch
+    "dist/migration/*.js" 
   ],
   "subscribers": [
-    "dist/subscriber/*.js" // Đường dẫn đến các tệp subscriber đã được biên dịch
+    "dist/subscriber/*.js"
   ],
   "cli": {
     "entitiesDir": "src/entity",

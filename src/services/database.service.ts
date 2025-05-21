@@ -13,8 +13,8 @@ class DatabaseService {
     port: parseInt(process.env.DB_PORT as string),
     // Optional: Configure connection pool
     max: 20, // Maximum number of clients in the pool
-    idleTimeoutMillis: 30000, // How long a client is allowed to remain idle before being closed
-    connectionTimeoutMillis: 2000 // How long to wait for a connection
+    idleTimeoutMillis: 300000, // How long a client is allowed to remain idle before being closed
+    connectionTimeoutMillis: 20000 // How long to wait for a connection
   }
 
   // Create a new pool instance

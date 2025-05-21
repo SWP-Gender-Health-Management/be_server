@@ -24,5 +24,7 @@ export const USERS_MESSAGES = {
   PASSWORD_INVALID: 'Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
   CONFIRM_PASSWORD_MUST_MATCH: 'Confirm password must match password',
   USER_REGISTERED_SUCCESS: 'User registered successfully',
-  CRYPTO_ERROR: 'Error hashing password'
+  EMAIL_NOT_FOUND: 'Email not found',
+  USER_LOGGED_IN_SUCCESS: 'User logged in successfully',
+  EMAIL_OR_PASSWORD_INVALID: 'Email or password invalid'
 }
