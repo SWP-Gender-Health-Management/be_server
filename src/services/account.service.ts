@@ -4,6 +4,7 @@ import { hashPassword, verifyPassword } from '~/utils/crypto'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { signToken } from '~/utils/jwt'
 import { config } from 'dotenv'
+import { sendMail } from './email.service'
 
 config()
 
@@ -59,28 +60,50 @@ class AccountService {
     })
   }
 
+  async createEmailVerifiedToken(payload: any) {
+    return await signToken({
+      payload,
+      secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string,
+      options: {
+        expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string)
+      }
+    })
+  }
+
   async createAccount(payload: any) {
     const { email, password } = payload
 
     // Check if email already exists
-    const existingUser = await this.checkEmailExist(email)
-    if (existingUser) {
-      throw new Error('Email already exists')
-    }
+    // const existingUser = await this.checkEmailExist(email)
+    // if (existingUser) {
+    //   throw new Error('Email already exists')
+    // }
 
     const account_id = (await this.createAccountId()).toString()
-    await db_service.query(
-      'INSERT INTO Account (account_id, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [account_id, email, await hashPassword(password), new Date(), new Date()]
-    )
-    const [accessToken, refreshToken] = await Promise.all([
+    const passwordHash = await hashPassword(password)
+    const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
+    const [accessToken, refreshToken, emailVerifiedToken] = await Promise.all([
       this.createAccessToken({ account_id, password }),
-      this.createRefreshToken({ account_id, password })
+      this.createRefreshToken({ account_id, password }),
+      this.createEmailVerifiedToken({ account_id, password, secretPasscode })
     ])
+
+    await sendMail({
+      to: 'ndmanh1005@gmail.com',
+      subject: 'Verify your email',
+      text: `Your passcode is ${secretPasscode}`
+    })
+
+    await db_service.query(
+      'INSERT INTO Account (account_id, email, password, is_verified, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [account_id, email, passwordHash, emailVerifiedToken, new Date(), new Date()]
+    )
+
     return {
       account_id,
       accessToken,
-      refreshToken
+      refreshToken,
+      emailVerifiedToken
     }
   }
 
@@ -90,6 +113,7 @@ class AccountService {
       this.createAccessToken({ account_id, password }),
       this.createRefreshToken({ account_id, password })
     ])
+
     return { accessToken, refreshToken }
   }
 }
