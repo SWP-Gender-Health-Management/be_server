@@ -10,3 +10,29 @@ export const registerController = async (req: Request, res: Response, next: Next
     result
   })
 }
+
+export const deleteAnAccountController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.deleteAnAccountById(req.body.account_id)
+  res.status(200).json({
+    message: USERS_MESSAGES.USER_CREATED_SUCCESS,
+    result
+  })
+}
+
+export const getAccountsListController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.getAccountsList(req.body.account_ids)
+  res.status(200).json({
+    message: USERS_MESSAGES.USER_CREATED_SUCCESS,
+    result
+  })
+}
+
+export const putUpdateAccountController = async (req: Request, res: Response, next: NextFunction) => {
+  const result = await accountService.updateAccount(req.body)
+  res.status(200).json({
+    message: USERS_MESSAGES.USER_CREATED_SUCCESS,
+    result
+  })
+}
+
+

@@ -34,9 +34,12 @@
     "typescript-eslint": "^8.32.1"
   },
   "dependencies": {
+    "@types/lodash": "^4.17.17",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
-    "pg": "^8.16.0"
+    "lodash": "^4.17.21",
+    "pg": "^8.16.0",
+    "typeorm": "^0.3.24"
   }
 }
