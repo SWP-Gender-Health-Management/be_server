@@ -1,5 +1,5 @@
 import HTTP_STATUS from '~/constants/httpStatus'
-import { USERS_MESSAGES } from '~/constants/MESSAGE'
+import { USERS_MESSAGES } from '~/constants/message'
 
 type ErrorType = Record<
   string,

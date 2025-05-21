@@ -62,14 +62,12 @@ export const validateLogin = validate(
       },
       custom: {
         options: async (value, { req }) => {
-          const user = await accountService.checkEmailExist(value)
-          if (!user) {
-            throw new Error(USERS_MESSAGES.EMAIL_NOT_FOUND)
-          }
-          const isPasswordValid = await verifyPassword(req.body.password, user.password)
-
-          if (!isPasswordValid) {
-            throw new Error(USERS_MESSAGES.PASSWORD_INVALID)
+          const [user, isPasswordValid] = await Promise.all([
+            accountService.checkEmailExist(value),
+            verifyPassword(value, req.body.password)
+          ])
+          if (!user || !isPasswordValid) {
+            throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_INVALID)
           }
           req.body.account_id = user.account_id
           req.body.password = user.password

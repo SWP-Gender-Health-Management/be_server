@@ -25,5 +25,6 @@ export const USERS_MESSAGES = {
   CONFIRM_PASSWORD_MUST_MATCH: 'Confirm password must match password',
   USER_REGISTERED_SUCCESS: 'User registered successfully',
   EMAIL_NOT_FOUND: 'Email not found',
-  USER_LOGGED_IN_SUCCESS: 'User logged in successfully'
+  USER_LOGGED_IN_SUCCESS: 'User logged in successfully',
+  EMAIL_OR_PASSWORD_INVALID: 'Email or password invalid'
 }

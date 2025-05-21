@@ -13,8 +13,8 @@ class AccountService {
     return user.rows.length > 0 ? user.rows[0] : null
   }
 
-  async checkPassword(account_id: string, password: string) {
-    const user = await db_service.query('SELECT * FROM Account WHERE account_id = $1', [account_id])
+  async checkPassword(email: string, password: string) {
+    const user = await db_service.query('SELECT * FROM Account WHERE email = $1', [email])
 
     const isPasswordValid = await verifyPassword(password, user.rows[0].password)
     return isPasswordValid
@@ -90,7 +90,6 @@ class AccountService {
       this.createAccessToken({ account_id, password }),
       this.createRefreshToken({ account_id, password })
     ])
-    payload.refresh_token = refreshToken
     return { accessToken, refreshToken }
   }
 }
