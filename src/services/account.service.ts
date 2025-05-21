@@ -70,6 +70,31 @@ class AccountService {
     })
   }
 
+  async getLength(): Promise<Number> {
+    const result = await db_service.query('SELECT COUNT(account_id) FROM Account')
+    if (result && result.rows && result.rows.length > 0 && result.rows[0].count !== undefined) {
+      return parseInt(result.rows[0].count, 10) + 1
+    } else {
+      return 1
+    }
+  }
+
+  async createId(): Promise<string> {
+    let num = (await this.getLength()).toString()
+    switch (num.length) {
+      case 1:
+        num = '000'.concat(num)
+        break
+      case 2:
+        num = '00'.concat(num)
+        break
+      case 3:
+        num = '0'.concat(num)
+        break
+    }
+    return 'ACC-'.concat(num)
+  }
+
   async createAccount(payload: any) {
     const { email, password } = payload
 
@@ -128,6 +153,7 @@ class AccountService {
 
   async updateAccount(id: any) {
     
+
   }
 }
 
