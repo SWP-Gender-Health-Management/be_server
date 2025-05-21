@@ -1,18 +1,10 @@
 import Account from '~/models/Entity/Account.entity'
 import db_service from './database.service'
-<<<<<<< HEAD
-import RandExp from 'randexp'
-import { hashPassword } from '~/utils/crypto'
-import { signToken } from '~/utils/jwt'
-=======
 import { hashPassword, verifyPassword } from '~/utils/crypto'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { signToken } from '~/utils/jwt'
 import { config } from 'dotenv'
 import { sendMail } from './email.service'
-
-config()
->>>>>>> 02f30bca547b77ede059705c0bdb6e5bdf4e860e
 
 class AccountService {
   async checkEmailExist(email: string) {
@@ -27,13 +19,8 @@ class AccountService {
     return isPasswordValid
   }
 
-  async getLength(): Promise<number> {
-    const length = await db_service.query('SELECT COUNT(*) FROM Account')
-    return parseInt(length.rows[0].count)
-  }
-
   async createAccountId() {
-    const result = (await this.getLength()) + 1
+    const result = await this.getLength()
     switch (result.toString().length) {
       case 1:
         return 'ACC-000'.concat(result.toString())
@@ -102,46 +89,7 @@ class AccountService {
   }
 
   async createAccount(payload: any) {
-<<<<<<< HEAD
-    const account_id = await this.createId()
     const { email, password } = payload
-    const tmp = await db_service.query(
-      'INSERT INTO account (account_id, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)',
-      [account_id, email, await hashPassword(password), new Date(), new Date()]
-    )
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.signAccessToken({ account_id, email }),
-      this.signRefreshToken({ account_id, email })
-    ])
-    return { account_id, accessToken, refreshToken }
-  }
-
-  async signAccessToken(payload: any) {
-    const accessToken = await signToken({
-      payload,
-      secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
-      options: { expiresIn: '30m' }
-    })
-    return accessToken
-  }
-
-  async signRefreshToken(payload: any) {
-    const refreshToken = await signToken({
-      payload,
-      secretKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
-      options: { expiresIn: '7d' }
-    })
-    return refreshToken
-=======
-    const { email, password } = payload
-
-    // Check if email already exists
-    // const existingUser = await this.checkEmailExist(email)
-    // if (existingUser) {
-    //   throw new Error('Email already exists')
-    // }
-
     const account_id = (await this.createAccountId()).toString()
     const passwordHash = await hashPassword(password)
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
@@ -178,7 +126,6 @@ class AccountService {
     ])
 
     return { accessToken, refreshToken }
->>>>>>> 02f30bca547b77ede059705c0bdb6e5bdf4e860e
   }
 }
 
