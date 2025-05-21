@@ -21,13 +21,8 @@ class AccountService {
     return isPasswordValid
   }
 
-  async getLength(): Promise<number> {
-    const length = await db_service.query('SELECT COUNT(*) FROM Account')
-    return parseInt(length.rows[0].count)
-  }
-
   async createAccountId() {
-    const result = (await this.getLength()) + 1
+    const result = await this.getLength()
     switch (result.toString().length) {
       case 1:
         return 'ACC-000'.concat(result.toString())
@@ -143,18 +138,13 @@ class AccountService {
   }
 
   async deleteAnAccountById(id: string) {
-    const tmp = await db_service.query('DELETE FROM Account WHERE account_id = $1', [id]);
-    return tmp.rows[0];
+    const tmp = await db_service.query('DELETE FROM Account WHERE account_id = $1', [id])
+    return tmp.rows[0]
   }
 
-  async getAccountsList(id: any) {
-    
-  }
+  async getAccountsList(id: any) {}
 
-  async updateAccount(id: any) {
-    
-
-  }
+  async updateAccount(id: any) {}
 }
 
 const accountService = new AccountService()
