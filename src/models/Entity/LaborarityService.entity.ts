@@ -1,18 +1,14 @@
 import {
   Entity,
   Column,
-  ManyToOne,
-  PrimaryGeneratedColumn,
   PrimaryColumn,
   BeforeInsert,
-  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn
 } from 'typeorm';
 import { v4 as uuidvg4 } from 'uuid';
 import idPrefix from '~/constants/idPrefix';
 import { Consultant } from './Consultant.entity';
-import { Double } from 'typeorm/browser';
 
 @Entity()
 export class LaborarityService {
@@ -26,7 +22,7 @@ export class LaborarityService {
   description!: string;
 
   @Column('double')
-  price!: Double;
+  price!: number;
 
   @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;

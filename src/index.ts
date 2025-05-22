@@ -22,7 +22,7 @@ app.use(express.json())
 
 
 createConnection().then(() => {
-  console.log('Connected to DB')
+  console.log('Connected to DB');
   // route: user
   app.use('/api', userRoutes);
   // route: Consultant

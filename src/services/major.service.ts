@@ -23,16 +23,13 @@ import { getRepository } from 'typeorm';
     return await this.majorRepository.save(major);
   }
 
-  async getAllMajors(includeConsultants: boolean = false): Promise<Major[]> {
-    return await this.majorRepository.find({
-      relations: includeConsultants ? ['consultants'] : [],
-    });
+  async getAllMajors(): Promise<Major[]> {
+    return await this.majorRepository.find();
   }
 
-  async getMajorById(major_id: string, includeConsultants: boolean = false): Promise<Major | null> {
+  async getMajorById(major_id: string): Promise<Major | null> {
     const major = await this.majorRepository.findOne({
-      where: { major_id },
-      relations: includeConsultants ? ['consultants'] : [],
+      where: { major_id }
     });
     return major || null;
   }
