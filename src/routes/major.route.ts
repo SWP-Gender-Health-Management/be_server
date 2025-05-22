@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import consultantController from '~/controllers/consultant.controller'
+import majorController from '~/controllers/major.controller'
 import wrapRequestHandler from '~/utils/handle'
 
 const conRoute = Router()
@@ -12,7 +12,7 @@ const conRoute = Router()
     con_id: String
   }
 */
-conRoute.get('/get', wrapRequestHandler(consultantController.getById));
+conRoute.get('/get', wrapRequestHandler(majorController.getById));
 
 /*
   Description: fet information of the consultant
@@ -22,7 +22,7 @@ conRoute.get('/get', wrapRequestHandler(consultantController.getById));
     con_id: String
   }
 */
-conRoute.post('/create', wrapRequestHandler(consultantController.postCreate));
+conRoute.post('/create', wrapRequestHandler(majorController.postCreate));
 
 /*
   Description: get all consultant
@@ -31,7 +31,7 @@ conRoute.post('/create', wrapRequestHandler(consultantController.postCreate));
   Body: {
   }
 */
-conRoute.get('/getAll', wrapRequestHandler(consultantController.getAll));
+conRoute.get('/getAll', wrapRequestHandler(majorController.getAll));
 
 /*
   Description: update 
@@ -41,6 +41,6 @@ conRoute.get('/getAll', wrapRequestHandler(consultantController.getAll));
     info...
   }
 */
-conRoute.put('/update', wrapRequestHandler(consultantController.putUpdate));
+conRoute.put('/update', wrapRequestHandler(majorController.putUpdate));
 
 export default conRoute

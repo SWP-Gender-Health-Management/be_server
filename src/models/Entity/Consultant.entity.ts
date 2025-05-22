@@ -6,7 +6,9 @@ import {
     PrimaryGeneratedColumn,
     PrimaryColumn,
     BeforeInsert,
-    JoinColumn  
+    JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn
 } from 'typeorm';
 import { v4 as uuidvg4 } from 'uuid';
 import idPrefix from '~/constants/idPrefix';
@@ -27,6 +29,19 @@ export class Consultant {
 
     @Column('varchar') // Chỉ định kiểu cột là varchar
     yoe!: number;
+
+    @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
+    created_at!: Date;
+
+    @UpdateDateColumn({
+        type: 'timestamp with time zone',
+        default: () => 'CURRENT_TIMESTAMP',
+        onUpdate: 'CURRENT_TIMESTAMP',
+    })
+    updated_at!: Date;
+
+    @Column({ type: 'varchar', length: 20, default: 'active' })
+    status!: string;
 
 
     @BeforeInsert()

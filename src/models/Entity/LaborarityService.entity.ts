@@ -1,23 +1,32 @@
 import {
   Entity,
   Column,
-  OneToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   PrimaryColumn,
   BeforeInsert,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn
 } from 'typeorm';
 import { v4 as uuidvg4 } from 'uuid';
 import idPrefix from '~/constants/idPrefix';
 import { Consultant } from './Consultant.entity';
+import { Double } from 'typeorm/browser';
 
 @Entity()
-export class Major {
+export class LaborarityService {
   @PrimaryColumn({ type: 'varchar', length: 50 }) // Giả sử id là varchar để đồng bộ với consultant_id
-  major_id!: string;
+  laborarity_id!: string;
+
+  @Column({ type: 'varchar', length: 50 })
+  name!: string;
 
   @Column('varchar')
-  name!: string;
+  description!: string;
+
+  @Column('double')
+  price!: Double;
 
   @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   created_at!: Date;
@@ -29,13 +38,10 @@ export class Major {
   })
   updated_at!: Date;
 
-  @OneToMany(() => Consultant, (consultant) => consultant.major)
-  consultants!: Consultant[]; // Mối quan hệ One-to-Many với Consultant
-
   @BeforeInsert()
   generateId() {
-    const prefix = idPrefix.MAJOR;
+    const prefix = idPrefix.LABORARITY_SERVICE;
     const uuidPart = uuidvg4().split('-')[0]; // Lấy 8 ký tự đầu của UUID
-    this.major_id = `${prefix}-${uuidPart}`;
+    this.laborarity_id = `${prefix}-${uuidPart}`;
   }
 }

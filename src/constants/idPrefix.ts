@@ -4,7 +4,8 @@ const idPrefix = {
     MANAGER: "MAN",
     STAFF: "STA",
     ADMIN: "ADM",
-    LABORARITY: "LAB"
+    LABORARITY_SERVICE: "LAS",
+    MAJOR: "MAJ"
 }
 
 export default idPrefix;
