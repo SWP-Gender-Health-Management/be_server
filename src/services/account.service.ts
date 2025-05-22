@@ -21,13 +21,8 @@ class AccountService {
     return isPasswordValid
   }
 
-  async getLength(): Promise<number> {
-    const length = await db_service.query('SELECT COUNT(*) FROM Account')
-    return parseInt(length.rows[0].count)
-  }
-
   async createAccountId() {
-    const result = (await this.getLength()) + 1
+    const result = await this.getLength()
     switch (result.toString().length) {
       case 1:
         return 'ACC-000'.concat(result.toString())
@@ -68,6 +63,31 @@ class AccountService {
         expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string)
       }
     })
+  }
+
+  async getLength(): Promise<Number> {
+    const result = await db_service.query('SELECT COUNT(account_id) FROM Account')
+    if (result && result.rows && result.rows.length > 0 && result.rows[0].count !== undefined) {
+      return parseInt(result.rows[0].count, 10) + 1
+    } else {
+      return 1
+    }
+  }
+
+  async createId(): Promise<string> {
+    let num = (await this.getLength()).toString()
+    switch (num.length) {
+      case 1:
+        num = '000'.concat(num)
+        break
+      case 2:
+        num = '00'.concat(num)
+        break
+      case 3:
+        num = '0'.concat(num)
+        break
+    }
+    return 'ACC-'.concat(num)
   }
 
   async createAccount(payload: any) {
@@ -118,17 +138,13 @@ class AccountService {
   }
 
   async deleteAnAccountById(id: string) {
-    const tmp = await db_service.query('DELETE FROM Account WHERE account_id = $1', [id]);
-    return tmp.rows[0];
+    const tmp = await db_service.query('DELETE FROM Account WHERE account_id = $1', [id])
+    return tmp.rows[0]
   }
 
-  async getAccountsList(id: any) {
-    
-  }
+  async getAccountsList(id: any) {}
 
-  async updateAccount(id: any) {
-    
-  }
+  async updateAccount(id: any) {}
 }
 
 const accountService = new AccountService()
