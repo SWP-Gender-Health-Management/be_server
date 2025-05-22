@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { v4 as uuidvg4 } from 'uuid';
 import idPrefix from '~/constants/idPrefix';
-import { Consultant } from './Consultant.entity';
 
 @Entity()
 export class LaborarityService {
@@ -21,7 +20,7 @@ export class LaborarityService {
   @Column('varchar')
   description!: string;
 
-  @Column('double')
+  @Column('float')
   price!: number;
 
   @CreateDateColumn({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
