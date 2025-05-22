@@ -3,7 +3,8 @@ const idPrefix = {
     CONSULTANT: "CON",
     MANAGER: "MAN",
     STAFF: "STA",
-    ADMIN: "ADM"
+    ADMIN: "ADM",
+    LABORARITY: "LAB"
 }
 
 export default idPrefix;

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getConsultantByIdController, putUpdateConsultantController } from '~/controllers/consultant.controller'
+import consultantController from '~/controllers/consultant.controller'
 import wrapRequestHandler from '~/utils/handle'
 
 const conRoute = Router()
@@ -12,7 +12,7 @@ const conRoute = Router()
     con_id: String
   }
 */
-conRoute.get('/consultant', wrapRequestHandler(getConsultantByIdController));
+conRoute.get('/consultant', wrapRequestHandler(consultantController.getById));
 
 /*
   Description: update 
@@ -22,6 +22,6 @@ conRoute.get('/consultant', wrapRequestHandler(getConsultantByIdController));
     info...
   }
 */
-conRoute.put('/consultant', wrapRequestHandler(putUpdateConsultantController));
+conRoute.put('/consultant', wrapRequestHandler(consultantController.putUpdate));
 
 export default conRoute

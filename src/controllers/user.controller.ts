@@ -4,7 +4,7 @@ import { getRepository } from 'typeorm';
 import { User } from '../models/Entity/User.entity';
 
 
-export class UserController {
+class UserController {
   async getAll(req: Request, res: Response) {
     const userRepository = getRepository(User);
     const users = await userRepository.find();
@@ -25,3 +25,6 @@ export class UserController {
     res.json(users);
   }
 }
+const userController = new UserController();
+
+export default userController;
