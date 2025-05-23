@@ -54,10 +54,8 @@ async function startServer() {
     console.log('Connected to PostgreSQL database');
 
     // Đăng ký các route
-    //app.use('/api', createUserRouter());
-    //app.use('/api', createConsultantRouter());
     app.use('/major', createMajorRouter());
-    //app.use('/api', createAccountRouter());
+    
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
