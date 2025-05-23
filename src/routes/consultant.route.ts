@@ -1,27 +1,20 @@
 import { Router } from 'express'
-import consultantController from '~/controllers/consultant.controller'
+import { ConsultantController } from '~/controllers/consultant.controller'
 import wrapRequestHandler from '~/utils/handle'
 
-const conRoute = Router()
+export function createConsultantRouter(): Router {
+  const router = Router();
+  const consultantServiceController = new ConsultantController();
 
-/*
-  Description: fet information of the consultant
-  Path: /consultant
-  Method: GET
-  Body: {
-    con_id: String
-  }
-*/
-conRoute.get('/consultant', wrapRequestHandler(consultantController.getById));
+  router.get('/:id', wrapRequestHandler(consultantServiceController.getById.bind(consultantServiceController)));
 
-/*
-  Description: update 
-  Path: /consultant
-  Method: GET
-  Body: {
-    info...
-  }
-*/
-conRoute.put('/consultant', wrapRequestHandler(consultantController.putUpdate));
+  router.post('/', wrapRequestHandler(consultantServiceController.postCreate.bind(consultantServiceController)));
 
-export default conRoute
+  router.get('/', wrapRequestHandler(consultantServiceController.getAll.bind(consultantServiceController)));
+
+  router.put('/:id', wrapRequestHandler(consultantServiceController.putUpdate.bind(consultantServiceController)));
+
+  router.delete('/:id', wrapRequestHandler(consultantServiceController.delete.bind(consultantServiceController)));
+
+  return router;
+}
