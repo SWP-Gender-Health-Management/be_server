@@ -3,7 +3,7 @@ import { getRepository } from 'typeorm';
 import { Consultant } from '../models/Entity/Consultant.entity';
 import { Major } from '../models/Entity/Major.entity';
 
-class ConsultantService {
+export class ConsultantService {
   private consultantRepository: Repository<Consultant>;
   private majorRepository: Repository<Major>;
 
@@ -104,5 +104,5 @@ class ConsultantService {
   }
 }
 
-const consultantService = new ConsultantService();
-export default consultantService;
+// const consultantService = new ConsultantService();
+// export default consultantService;

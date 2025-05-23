@@ -10,10 +10,12 @@ export class LaborarityServiceService {
   }
 
   async createLaborarityService(data: { name: string; description: string; price: number }): Promise<LaborarityService> {
-    const { name, description, price } = data;
+    let { name, description, price } = data;
 
     if (!name) throw new Error('name is required');
-    if (!description) throw new Error('description is required');
+    if (!description) {
+      description = "";
+    }
     if (price === undefined || price === null) throw new Error('price is required');
     if (price < 0) throw new Error('price must be non-negative');
 

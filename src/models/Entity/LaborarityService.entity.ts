@@ -18,7 +18,7 @@ export class LaborarityService {
   name!: string;
 
   @Column('varchar')
-  description!: string;
+  description?: string;
 
   @Column('float')
   price!: number;

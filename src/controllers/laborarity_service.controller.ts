@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { LaborarityServiceService } from '../services/laborarity-service.service';
+import { LaborarityServiceService } from '../services/laborarity_service.service';
 
 export class LaborarityServiceController {
   private laborarityServiceService: LaborarityServiceService;
@@ -8,7 +8,7 @@ export class LaborarityServiceController {
     this.laborarityServiceService = new LaborarityServiceService();
   }
 
-  async create(req: Request, res: Response) {
+  async postCreate(req: Request, res: Response) {
     try {
       const { name, description, price } = req.body;
       const laborarityService = await this.laborarityServiceService.createLaborarityService({
@@ -35,7 +35,8 @@ export class LaborarityServiceController {
     try {
       const laborarityService = await this.laborarityServiceService.getLaborarityServiceById(req.params.id);
       if (!laborarityService) {
-        return res.status(404).json({ message: 'LaborarityService not found' });
+        res.status(404).json({ message: 'LaborarityService not found' });
+        return;
       }
       res.json(laborarityService);
     } catch (error: any) {
@@ -43,7 +44,7 @@ export class LaborarityServiceController {
     }
   }
 
-  async update(req: Request, res: Response) {
+  async putUpdate(req: Request, res: Response) {
     try {
       const { name, description, price } = req.body;
       const laborarityService = await this.laborarityServiceService.updateLaborarityService(req.params.id, {
@@ -52,7 +53,8 @@ export class LaborarityServiceController {
         price,
       });
       if (!laborarityService) {
-        return res.status(404).json({ message: 'LaborarityService not found' });
+        res.status(404).json({ message: 'LaborarityService not found' });
+        return;
       }
       res.json(laborarityService);
     } catch (error: any) {

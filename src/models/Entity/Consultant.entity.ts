@@ -22,7 +22,7 @@ export class Consultant {
     @Column('varchar') // Chỉ định kiểu cột là varchar
     account_id!: string;
 
-    @Column({ type: 'varchar', length: 50 })
+    @Column({ type: 'varchar' })
     @JoinColumn({ name: 'major_id' }) // Chỉ định major_id là foreign key
     @ManyToOne(() => Major, (major) => major.consultants)
     major!: Major; // Mối quan hệ Many-to-One với Major

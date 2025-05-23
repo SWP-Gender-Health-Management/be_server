@@ -1,46 +1,20 @@
 import { Router } from 'express'
-import consultantController from '~/controllers/consultant.controller'
+import { ConsultantController } from '~/controllers/consultant.controller'
 import wrapRequestHandler from '~/utils/handle'
 
-const conRoute = Router()
+export function createConsultantRouter(): Router {
+  const router = Router();
+  const consultantServiceController = new ConsultantController();
 
-/*
-  Description: fet information of the consultant
-  Path: /consultant
-  Method: GET
-  Body: {
-    con_id: String
-  }
-*/
-conRoute.get('/get', wrapRequestHandler(consultantController.getById));
+  router.get('/:id', wrapRequestHandler(consultantServiceController.getById.bind(consultantServiceController)));
 
-/*
-  Description: fet information of the consultant
-  Path: /consultant
-  Method: GET
-  Body: {
-    con_id: String
-  }
-*/
-conRoute.post('/create', wrapRequestHandler(consultantController.postCreate));
+  router.post('/', wrapRequestHandler(consultantServiceController.postCreate.bind(consultantServiceController)));
 
-/*
-  Description: get all consultant
-  Path: /consultant
-  Method: post
-  Body: {
-  }
-*/
-conRoute.get('/getAll', wrapRequestHandler(consultantController.getAll));
+  router.get('/', wrapRequestHandler(consultantServiceController.getAll.bind(consultantServiceController)));
 
-/*
-  Description: update 
-  Path: /consultant
-  Method: put
-  Body: {
-    info...
-  }
-*/
-conRoute.put('/update', wrapRequestHandler(consultantController.putUpdate));
+  router.put('/:id', wrapRequestHandler(consultantServiceController.putUpdate.bind(consultantServiceController)));
 
-export default conRoute
+  router.delete('/:id', wrapRequestHandler(consultantServiceController.delete.bind(consultantServiceController)));
+
+  return router;
+}
