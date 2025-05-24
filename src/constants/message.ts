@@ -26,5 +26,19 @@ export const USERS_MESSAGES = {
   USER_REGISTERED_SUCCESS: 'User registered successfully',
   EMAIL_NOT_FOUND: 'Email not found',
   USER_LOGGED_IN_SUCCESS: 'User logged in successfully',
-  EMAIL_OR_PASSWORD_INVALID: 'Email or password invalid'
+  EMAIL_OR_PASSWORD_INVALID: 'Email or password invalid',
+  NEW_PASSWORD_MUST_BE_DIFFERENT: 'New password must be different from the old password',
+  PASSWORD_CHANGED_SUCCESS: 'Password changed successfully',
+  ACCESS_TOKEN_REQUIRED: 'Access token is required',
+  CHANGE_PASSWORD_FAILED: 'Change password failed',
+  ACCOUNT_ALREADY_EXISTS: 'Account already exists',
+  ACCOUNT_NOT_FOUND: 'Account not found',
+  SECRET_PASSCODE_MUST_BE_6_CHARACTERS: 'Secret passcode must be 6 characters long',
+  EMAIL_VERIFIED_SUCCESS: 'Email verified successfully',
+  EMAIL_ALREADY_VERIFIED: 'Email already verified',
+  SECRET_PASSCODE_MISMATCH: 'Secret passcode mismatch',
+  FULL_NAME_INVALID: 'Fullname is invalid',
+  PHONE_INVALID: 'Phone is invalid',
+  DOB_INVALID: 'Date of birth is invalid',
+  GENDER_INVALID: 'Gender is invalid'
 }

@@ -43,7 +43,7 @@ export async function sendMail(options: MailOptions) {
     const transporter = await createTransporter() // Hoặc bạn có thể khởi tạo transporter một lần và tái sử dụng
 
     const mailOptions = {
-      from: `"Tên Ứng Dụng Của Bạn" <${process.env.EMAIL_USER}>`, // Địa chỉ người gửi (phải khớp với user trong auth)
+      from: `Gender Health Management: ${process.env.EMAIL_USER}`, // Địa chỉ người gửi (phải khớp với user trong auth)
       to: options.to,
       subject: options.subject,
       text: options.text,

@@ -11,13 +11,13 @@ class UserController {
     res.json(users);
   }
 
-  async create(req: Request, res: Response) {
-    const userRepository = getRepository(User);
-    const { name, email } = req.body;
-    const userTmp = userRepository.create({ name, email });
-    await userRepository.save(userTmp);
-    res.status(201).json(userTmp);
-  }
+//   async create(req: Request, res: Response) {
+//     const userRepository = getRepository(User)
+//     const { name, email } = req.body
+//     const userTmp = userRepository.create({ name, email })
+//     await userRepository.save(userTmp)
+//     res.status(201).json(userTmp)
+//   }
 
   async delete(req: Request, res: Response) {
     const userRepository = getRepository(User);

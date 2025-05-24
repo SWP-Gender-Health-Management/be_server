@@ -1,74 +1,42 @@
-// import 'reflect-metadata';
-// import express from 'express'
+import 'reflect-metadata'
+import express from 'express'
+import dotenv from 'dotenv'
+import passport from 'passport'
+import accountRoute from './routes/account.route'
+import consultantRoute from './routes/consultant.route'
+import userRoutes from './routes/user.route'
+import { initializeApp } from './config/app.config'
+import defaultErrorHandle from './middlewares/error.middleware'
+import { AppDataSource } from './config/database.config'
 
-// import 'reflect-metadata'
-// import dotenv from 'dotenv'
-// import accountRoute from './routes/account.route'
-// import consultantRoute from './routes/consultant.route'
-// import majorRouter from './routes/major.route'
-// import { createConnection } from 'typeorm';
-// import userRoutes from './routes/user.route'
+ dotenv.config()
 
-// dotenv.config()
+ const app = express()
 
-// const app = express()
+// app.use(passport.initialize())
 
-// app.use(express.json())
-// connect database
-//pool.connect()
+// Initialize app (database and passport)
+initializeApp()
+  .then((success) => {
+    if (success) {
+      app.use(express.json())
+      // Setup routes
 
-//route: Account
-//app.use('/account', accountRoute)
+      app.use('/account', accountRoute)
 
-// createConnection().then(() => {
-//   console.log('Connected to DB');
-//   // route: user
-//   app.use('/api', userRoutes);
-//   // route: Consultant
-//   //app.use('/consultant', consultantRoute)
-//   // route: Major
-//   app.use('/major', createMajorRouter())
+      app.use(defaultErrorHandle)
 
-//   app.listen(parseInt(process.env.PORT as string), () => {
-//     console.log(`Server is running on port: ${process.env.PORT}`)
-//   });
-// }).catch((error) => console.log('Error connecting to database:', error));
-
-import 'reflect-metadata';
-import express from 'express';
-import { createConnection } from 'typeorm';
-import dotenv from 'dotenv';
-import { createLaborarityRouter } from './routes/laborarity_service.route';
-import { createMajorRouter } from './routes/major.route';
-import { createConsultantRouter } from './routes/consultant.route';
-
-
-
-dotenv.config();
-
-const app = express();
-app.use(express.json());
-
-async function startServer() {
-  try {
-    console.log('Attempting to connect to database...');
-    await createConnection();
-    console.log('Connected to PostgreSQL database');
-
-    // Đăng ký các route
-    app.use('/major', createMajorRouter());
-    app.use('/laborarity_service', createLaborarityRouter());
-    app.use('/consultant', createConsultantRouter());
-
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Error connecting to database:', error);
-    process.exit(1);
-  }
-}
-
-startServer();
-
+      // Start server
+      const port = process.env.PORT || 3000
+      app.listen(port, () => {
+        console.log(`Server is running on port: ${port}`)
+      })
+    } else {
+      console.error('Failed to initialize app')
+      process.exit(1)
+    }
+  })
+  .catch((error) => {
+    console.error('Error starting server:', error)
+    process.exit(1)
+  })
