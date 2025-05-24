@@ -1,48 +1,41 @@
-import Account from '~/models/Entity/Account.entity'
-import db_service from './database.service'
+import 'reflect-metadata'
+import account from '~/models/Entity/Account.entity'
+// import db_service from './database.service'
 import { hashPassword, verifyPassword } from '~/utils/crypto'
-import { JsonWebTokenError } from 'jsonwebtoken'
-import { signToken } from '~/utils/jwt'
+import { signToken, verifyToken } from '~/utils/jwt'
 import { config } from 'dotenv'
 import { sendMail } from './email.service'
-
+import { AppDataSource } from '~/config/database.config'
+import Account from '~/models/Entity/Account.entity'
+import { ErrorWithStatus } from '~/models/Error'
+import { USERS_MESSAGES } from '~/constants/message'
+import { Verify, verify } from 'crypto'
+import { log } from 'console'
 config()
-
+const accountRepository = AppDataSource.getRepository(account)
 class AccountService {
   async checkEmailExist(email: string) {
-    const user = await db_service.query('SELECT * FROM Account WHERE email = $1', [email])
-    return user.rows.length > 0 ? user.rows[0] : null
+    return await accountRepository.findOne({ where: { email } })
   }
 
   async checkPassword(email: string, password: string) {
-    const user = await db_service.query('SELECT * FROM Account WHERE email = $1', [email])
-
-    const isPasswordValid = await verifyPassword(password, user.rows[0].password)
+    const user = await accountRepository.findOne({ where: { email } })
+    if (!user) {
+      throw new Error('Account not found')
+    }
+    const isPasswordValid = await verifyPassword(password, user.password)
     return isPasswordValid
   }
 
-  async createAccountId() {
-    const result = await this.getLength()
-    switch (result.toString().length) {
-      case 1:
-        return 'ACC-000'.concat(result.toString())
-      case 2:
-        return 'ACC-00'.concat(result.toString())
-      case 3:
-        return 'ACC-0'.concat(result.toString())
-      default:
-        return 'ACC-'.concat(result.toString())
-    }
-  }
-
   async createAccessToken(payload: any) {
-    return await signToken({
+    const token = await signToken({
       payload,
       secretKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
-        expiresIn: parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRE_IN as string)
+        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE_IN as string
       }
     })
+    return token
   }
 
   async createRefreshToken(payload: any) {
@@ -50,7 +43,7 @@ class AccountService {
       payload,
       secretKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
-        expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string)
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string
       }
     })
   }
@@ -60,67 +53,43 @@ class AccountService {
       payload,
       secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string,
       options: {
-        expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string)
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE_IN as string
       }
     })
   }
 
-  async getLength(): Promise<Number> {
-    const result = await db_service.query('SELECT COUNT(account_id) FROM Account')
-    if (result && result.rows && result.rows.length > 0 && result.rows[0].count !== undefined) {
-      return parseInt(result.rows[0].count, 10) + 1
-    } else {
-      return 1
-    }
-  }
-
-  async createId(): Promise<string> {
-    let num = (await this.getLength()).toString()
-    switch (num.length) {
-      case 1:
-        num = '000'.concat(num)
-        break
-      case 2:
-        num = '00'.concat(num)
-        break
-      case 3:
-        num = '0'.concat(num)
-        break
-    }
-    return 'ACC-'.concat(num)
-  }
-
   async createAccount(payload: any) {
     const { email, password } = payload
+    const result = await accountRepository.findOne({ where: { email } })
 
-    // Check if email already exists
-    // const existingUser = await this.checkEmailExist(email)
-    // if (existingUser) {
-    //   throw new Error('Email already exists')
-    // }
+    if (result) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_ALREADY_EXISTS,
+        status: 400
+      })
+    }
 
-    const account_id = (await this.createAccountId()).toString()
     const passwordHash = await hashPassword(password)
     const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
+
+    const user = await accountRepository.create({
+      email: email,
+      password: passwordHash,
+      created_at: new Date(),
+      updated_at: new Date()
+    })
+    await accountRepository.save(user)
+
     const [accessToken, refreshToken, emailVerifiedToken] = await Promise.all([
-      this.createAccessToken({ account_id, password }),
-      this.createRefreshToken({ account_id, password }),
-      this.createEmailVerifiedToken({ account_id, password, secretPasscode })
+      this.createAccessToken({ account_id: user.account_id, password }),
+      this.createRefreshToken({ account_id: user.account_id, password }),
+      this.createEmailVerifiedToken({ account_id: user.account_id, secretPasscode })
     ])
 
-    await sendMail({
-      to: 'ndmanh1005@gmail.com',
-      subject: 'Verify your email',
-      text: `Your passcode is ${secretPasscode}`
-    })
-
-    await db_service.query(
-      'INSERT INTO Account (account_id, email, password, is_verified, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [account_id, email, passwordHash, emailVerifiedToken, new Date(), new Date()]
-    )
+    await this.sendEmailVerified(user.account_id)
 
     return {
-      account_id,
+      account_id: user.account_id,
       accessToken,
       refreshToken,
       emailVerifiedToken
@@ -128,24 +97,86 @@ class AccountService {
   }
 
   async login(payload: any) {
-    const { account_id, password } = payload
+    const { account_id } = payload
     const [accessToken, refreshToken] = await Promise.all([
-      this.createAccessToken({ account_id, password }),
-      this.createRefreshToken({ account_id, password })
+      this.createAccessToken({ account_id }),
+      this.createRefreshToken({ account_id })
     ])
-
     return { accessToken, refreshToken }
   }
 
-  async deleteAnAccountById(id: string) {
-    const tmp = await db_service.query('DELETE FROM Account WHERE account_id = $1', [id])
-    return tmp.rows[0]
+  async changePassword(payload: any) {
+    const { account_id, new_password } = payload
+    const user = await accountRepository.update(account_id, { password: new_password })
+    const [accessToken, refreshToken] = await Promise.all([
+      this.createAccessToken({ account_id, new_password }),
+      this.createRefreshToken({ account_id, new_password })
+    ])
+    return { accessToken, refreshToken }
   }
 
   async getAccountsList(id: any) {}
 
   async updateAccount(id: any) {}
-}
 
+  async verifyEmail(payload: any) {
+    const { account_id, secretPasscode } = payload
+    const user: account | null = await accountRepository.findOne({ where: { account_id } })
+    console.log(user)
+
+    if (user?.is_verified === '1') {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED,
+        status: 400
+      })
+    }
+    const isSecretPasscodeValid = await verifyToken({
+      token: user?.is_verified as string,
+      secretKey: process.env.JWT_SECRET_EMAIL_VERIFIED_TOKEN as string
+    })
+
+    console.log(isSecretPasscodeValid)
+
+    if (secretPasscode !== isSecretPasscodeValid.secretPasscode && account_id !== isSecretPasscodeValid.account_id) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.SECRET_PASSCODE_MISMATCH,
+        status: 400
+      })
+    }
+
+    await accountRepository.update(user?.account_id as string, { is_verified: '1' as string })
+    return {
+      message: USERS_MESSAGES.EMAIL_VERIFIED_SUCCESS
+    }
+  }
+
+  async updateProfile(payload: any) {
+    if (!(await this.checkEmailExist(payload.account_id))) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.ACCOUNT_NOT_FOUND,
+        status: 400
+      })
+    }
+    const { account_id, full_name, phone, dob, gender } = payload
+    const user = await accountRepository.update(account_id, { full_name, phone, dob, gender })
+    return user
+  }
+
+  async sendEmailVerified(account_id: string) {
+    const secretPasscode = Math.floor(100000 + Math.random() * 900000).toString()
+    const emailVerifyToken = await this.createEmailVerifiedToken({
+      account_id: account_id,
+      secretPasscode: secretPasscode
+    })
+    await Promise.all([
+      accountRepository.update(account_id, { is_verified: emailVerifyToken }),
+      sendMail({
+        to: 'ndmanh1005@gmail.com',
+        subject: 'Verify your email',
+        text: `Your passcode is ${secretPasscode}`
+      })
+    ])
+  }
+}
 const accountService = new AccountService()
 export default accountService

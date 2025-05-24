@@ -1,11 +1,17 @@
-import db_service from './database.service'
+import { AppDataSource } from '~/config/database.config'
+import refresh_tokens from '~/models/Entity/Refresh_token.entity'
 
 class RefreshTokenService {
   async createRefreshToken({ account_id, token }: { account_id: string; token: string }) {
-    return await db_service.query(
-      'INSERT INTO refresh_tokens (account_id, token, created_at, updated_at) VALUES ($1, $2, $3, $4)',
-      [account_id, token, new Date(), new Date()]
-    )
+    const refreshTokenRepository = AppDataSource.getRepository(refresh_tokens)
+    console.log('account_id, token', account_id, token)
+
+    return await refreshTokenRepository.save({
+      account_id: account_id,
+      token: token,
+      created_at: new Date(),
+      updated_at: new Date()
+    })
   }
 
   async updateRefreshToken({ account_id, token }: { account_id: string; token: string }) {
@@ -14,11 +20,11 @@ class RefreshTokenService {
 
     if (existingToken) {
       // Update existing token
-      await db_service.query('UPDATE refresh_tokens SET token = $1, updated_at = $2 WHERE account_id = $3', [
-        token,
-        new Date(),
-        account_id
-      ])
+      const refreshTokenRepository = AppDataSource.getRepository(refresh_tokens)
+      await refreshTokenRepository.update(existingToken.account_id, {
+        token: token,
+        updated_at: new Date()
+      })
     } else {
       // Create new token if doesn't exist
       await this.createRefreshToken({ account_id, token })
@@ -26,8 +32,8 @@ class RefreshTokenService {
   }
 
   async getRefreshToken({ account_id }: { account_id: string }) {
-    const result = await db_service.query('SELECT * FROM refresh_tokens WHERE account_id = $1', [account_id])
-    return result.rows[0]
+    const refreshTokenRepository = AppDataSource.getRepository(refresh_tokens)
+    return await refreshTokenRepository.findOne({ where: { account_id: account_id } })
   }
 }
 

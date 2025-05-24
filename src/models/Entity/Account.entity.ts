@@ -1,35 +1,60 @@
-interface AccountType {
+import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm'
+import idPrefix from '~/constants/idPrefix'
+import { v4 as uuidvg4 } from 'uuid'
+
+export interface AccountType {
   account_id: string
-  full_name?: string
+  full_name?: string | null
   email: string
-  phone?: string
-  dob?: Date
-  gender?: string
+  phone?: string | null
+  dob?: Date | null
+  gender?: string | null
   password: string
-  role?: string
-  is_verified?: boolean
+  role?: string | null
+  is_verified?: string | null
   created_at: Date
   updated_at: Date
 }
 
-export default class Account {
-  account_id: string
-  full_name?: string
-  email: string
-  phone?: string
-  dob?: Date
-  gender?: string
-  password: string
-  role?: string
-  is_verified?: boolean
-  created_at: Date
-  updated_at: Date
+@Entity()
+export default class Account implements AccountType {
+  @PrimaryColumn('varchar')
+  account_id!: string
 
-  constructor(account: AccountType) {
-    this.account_id = account.account_id
-    this.email = account.email
-    this.password = account.password
-    this.created_at = new Date()
-    this.updated_at = new Date()
+  @Column('varchar', { nullable: true })
+  full_name: string | null
+
+  @Column('varchar')
+  email!: string
+
+  @Column('varchar', { nullable: true })
+  phone: string | null
+
+  @Column('date', { nullable: true })
+  dob: Date | null
+
+  @Column('varchar', { nullable: true })
+  gender: string | null
+
+  @Column('varchar')
+  password!: string
+
+  @Column('varchar', { nullable: true })
+  role: string | null
+
+  @Column('varchar', { default: 'false' })
+  is_verified: string
+
+  @Column('date')
+  created_at!: Date
+
+  @Column('date')
+  updated_at!: Date
+
+  @BeforeInsert()
+  generateId() {
+    const prefix = idPrefix.ACCOUNT
+    const uuidPart = uuidvg4().split('-')[0] // Lấy 8 ký tự đầu của UUID
+    this.account_id = `${prefix}-${uuidPart}`
   }
 }
