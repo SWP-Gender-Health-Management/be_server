@@ -41,6 +41,7 @@ import dotenv from 'dotenv';
 import { createLaborarityRouter } from './routes/laborarity_service.route';
 import { createMajorRouter } from './routes/major.route';
 import { createConsultantRouter } from './routes/consultant.route';
+import { createRoleRouter } from './routes/role.route';
 
 
 
@@ -59,6 +60,7 @@ async function startServer() {
     app.use('/major', createMajorRouter());
     app.use('/laborarity_service', createLaborarityRouter());
     app.use('/consultant', createConsultantRouter());
+    app.use('/role', createRoleRouter());
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

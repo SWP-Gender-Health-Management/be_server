@@ -5,6 +5,7 @@ const idPrefix = {
     STAFF: "STA",
     ADMIN: "ADM",
     LABORARITY_SERVICE: "LAS",
+    ROLE: "ROL",
     MAJOR: "MAJ"
 }
 
