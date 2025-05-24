@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from 'express'
 import { HTTP_MESSAGE } from '~/constants/message'
-import { ConsultantService } from '~/services/consultant.service'
+import consultantService from '~/services/consultant.service'
 
-export class ConsultantController {
+class ConsultantController {
 
-  private consultantService: ConsultantService;
+  // private consultantService: ConsultantService;
 
-  constructor() {
-    this.consultantService = new ConsultantService();
-  }
+  // constructor() {
+  //   this.consultantService = new ConsultantService();
+  // }
 
   getById = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await this.consultantService.getConsultantById(req.params.id)
+    const result = await consultantService.getConsultantById(req.params.id)
     res.status(200).json({
       message: HTTP_MESSAGE.SUCCESS,
       result
@@ -19,7 +19,7 @@ export class ConsultantController {
   }
 
   putUpdate = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await this.consultantService.updateConsultant(req.params.id, req.body)
+    const result = await consultantService.updateConsultant(req.params.id, req.body)
     res.status(200).json({
       message: HTTP_MESSAGE.SUCCESS,
       result
@@ -27,7 +27,7 @@ export class ConsultantController {
   }
 
   getAll = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await this.consultantService.getAllConsultants()
+    const result = await consultantService.getAllConsultants()
     res.status(200).json({
       message: HTTP_MESSAGE.SUCCESS,
       result
@@ -35,7 +35,7 @@ export class ConsultantController {
   }
 
   postCreate = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await this.consultantService.createConsultant(req.body);
+    const result = await consultantService.createConsultant(req.body);
     res.status(200).json({
       message: HTTP_MESSAGE.SUCCESS,
       result
@@ -43,7 +43,7 @@ export class ConsultantController {
   }
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await this.consultantService.deleteConsultant(req.params.id);
+    const result = await consultantService.deleteConsultant(req.params.id);
     res.status(200).json({
       message: HTTP_MESSAGE.SUCCESS,
       result
@@ -51,5 +51,5 @@ export class ConsultantController {
   }
 }
 
-// const consultantController = new ConsultantController();
-// export default consultantController;
+const consultantController = new ConsultantController();
+export default consultantController;

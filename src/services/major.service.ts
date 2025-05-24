@@ -65,42 +65,48 @@
 //   }
 // }
 
-import { Repository } from 'typeorm';
-import { getRepository } from 'typeorm';
+
+import 'reflect-metadata'
 import { Major } from '../models/Entity/Major.entity';
 import { Consultant } from '../models/Entity/Consultant.entity';
+import { AppDataSource } from '~/config/database.config';
 
-export class MajorService {
-  private majorRepository: Repository<Major>;
-  private consultantRepository: Repository<Consultant>;
 
-  constructor() {
-    this.majorRepository = getRepository(Major);
-    this.consultantRepository = getRepository(Consultant);
-  }
+  const majorRepository = AppDataSource.getRepository(Major);
+
+  const consultantRepository = AppDataSource.getRepository(Consultant);
+
+ class MajorService {
+  // private majorRepository: Repository<Major>;
+  // private consultantRepository: Repository<Consultant>;
+
+  // constructor() {
+  //   this.majorRepository = getRepository(Major);
+  //   this.consultantRepository = getRepository(Consultant);
+  // }
 
   async createMajor(data: { name: string }): Promise<Major> {
     const { name } = data;
 
     if (!name) throw new Error('name is required');
 
-    const major = this.majorRepository.create({ name });
-    return await this.majorRepository.save(major);
+    const major = majorRepository.create({ name });
+    return await majorRepository.save(major);
   }
 
   async getAllMajors(): Promise<Major[]> {
-    return await this.majorRepository.find();
+    return await majorRepository.find();
   }
 
   async getMajorById(major_id: string): Promise<Major | null> {
-    const major = await this.majorRepository.findOne({
+    const major = await majorRepository.findOne({
       where: { major_id },
     });
     return major || null;
   }
 
   async updateMajor(major_id: string, data: { name?: string }): Promise<Major | null> {
-    const major = await this.majorRepository.findOne({ where: { major_id } });
+    const major = await majorRepository.findOne({ where: { major_id } });
     if (!major) {
       throw new Error('Major not found');
     }
@@ -109,22 +115,25 @@ export class MajorService {
       major.name = data.name;
     }
 
-    return await this.majorRepository.save(major);
+    return await majorRepository.save(major);
   }
 
   async deleteMajor(major_id: string): Promise<void> {
-    const consultantCount = await this.consultantRepository.count({
+    const consultantCount = await consultantRepository.count({
       where: { major: { major_id } },
     });
     if (consultantCount > 0) {
       throw new Error('Cannot delete Major because it is referenced by Consultants');
     }
 
-    const major = await this.majorRepository.findOne({ where: { major_id } });
+    const major = await majorRepository.findOne({ where: { major_id } });
     if (!major) {
       throw new Error('Major not found');
     }
 
-    await this.majorRepository.remove(major);
+    await majorRepository.remove(major);
   }
 }
+
+const majorService = new MajorService();
+export default majorService;

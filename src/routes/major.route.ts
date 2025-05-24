@@ -47,49 +47,48 @@
 // export default router
 
 import { Router } from 'express';
-import { MajorController } from '~/controllers/major.controller';
+import majorController from '~/controllers/major.controller';
 import wrapRequestHandler from '~/utils/handle';
 
-export function createMajorRouter(): Router {
-  const router = Router();
-  const majorController = new MajorController();
 
-  /*
-    Description: Get information of the major
-    Path: /majors/:id
-    Method: GET
-  */
-  router.get('/:id', wrapRequestHandler(majorController.getById.bind(majorController)));
+const majorRouter = Router();
 
-  /*
-    Description: Create a new major
-    Path: /majors
-    Method: POST
-    Body: { name: String }
-  */
-  router.post('/', wrapRequestHandler(majorController.postCreate.bind(majorController)));
 
-  /*
-    Description: Get all majors
-    Path: /majors
-    Method: GET
-  */
-  router.get('/', wrapRequestHandler(majorController.getAll.bind(majorController)));
+/*
+  Description: Get information of the major
+  Path: /majors/:id
+  Method: GET
+*/
+majorRouter.get('/:id', wrapRequestHandler(majorController.getById.bind(majorController)));
 
-  /*
-    Description: Update a major
-    Path: /majors/:id
-    Method: PUT
-    Body: { name?: String }
-  */
-  router.put('/:id', wrapRequestHandler(majorController.putUpdate.bind(majorController)));
+/*
+  Description: Create a new major
+  Path: /majors
+  Method: POST
+  Body: { name: String }
+*/
+majorRouter.post('/', wrapRequestHandler(majorController.postCreate.bind(majorController)));
 
-  /*
-    Description: Delete a major
-    Path: /majors/:id
-    Method: DELETE
-  */
-  router.delete('/:id', wrapRequestHandler(majorController.delete.bind(majorController)));
+/*
+  Description: Get all majors
+  Path: /majors
+  Method: GET
+*/
+majorRouter.get('/', wrapRequestHandler(majorController.getAll.bind(majorController)));
 
-  return router;
-}
+/*
+  Description: Update a major
+  Path: /majors/:id
+  Method: PUT
+  Body: { name?: String }
+*/
+majorRouter.put('/:id', wrapRequestHandler(majorController.putUpdate.bind(majorController)));
+
+/*
+  Description: Delete a major
+  Path: /majors/:id
+  Method: DELETE
+*/
+majorRouter.delete('/:id', wrapRequestHandler(majorController.delete.bind(majorController)));
+
+export default majorRouter;

@@ -55,18 +55,18 @@
 
 import { NextFunction, Request, Response } from 'express';
 import { HTTP_MESSAGE } from '~/constants/message';
-import { MajorService } from '~/services/major.service';
+import majorService from '~/services/major.service';
 
-export class MajorController {
-  private majorService: MajorService;
+ class MajorController {
+  // private majorService: MajorService;
 
-  constructor() {
-    this.majorService = new MajorService();
-  }
+  // constructor() {
+  //   this.majorService = new MajorService();
+  // }
 
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.majorService.getMajorById(req.params.id); // Sửa: dùng req.params.id
+      const result = await majorService.getMajorById(req.params.id); // Sửa: dùng req.params.id
       if (!result) {
         res.status(404).json({ message: 'Major not found' });
         return;
@@ -82,7 +82,7 @@ export class MajorController {
 
   async putUpdate(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.majorService.updateMajor(req.params.id, req.body); // Sửa: dùng req.params.id
+      const result = await majorService.updateMajor(req.params.id, req.body); // Sửa: dùng req.params.id
       if (!result) {
         res.status(404).json({ message: 'Major not found' });
         return;
@@ -98,7 +98,7 @@ export class MajorController {
 
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.majorService.getAllMajors();
+      const result = await majorService.getAllMajors();
       res.status(200).json({
         message: HTTP_MESSAGE.SUCCESS,
         result,
@@ -110,7 +110,7 @@ export class MajorController {
 
   async postCreate(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.majorService.createMajor(req.body);
+      const result = await majorService.createMajor(req.body);
       res.status(201).json({
         // Sửa: dùng status 201 cho tạo mới
         message: HTTP_MESSAGE.SUCCESS,
@@ -123,7 +123,7 @@ export class MajorController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      await this.majorService.deleteMajor(req.params.id); // Sửa: dùng req.params.id
+      await majorService.deleteMajor(req.params.id); // Sửa: dùng req.params.id
       res.status(200).json({
         message: HTTP_MESSAGE.SUCCESS,
         result: null,
@@ -133,3 +133,6 @@ export class MajorController {
     }
   }
 }
+
+const majorController = new MajorController();
+export default majorController;

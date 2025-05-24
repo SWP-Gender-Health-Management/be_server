@@ -1,16 +1,20 @@
-import { Repository } from 'typeorm';
-import { getRepository } from 'typeorm';
+import 'reflect-metadata'
 import { Consultant } from '../models/Entity/Consultant.entity';
 import { Major } from '../models/Entity/Major.entity';
+import { AppDataSource } from '~/config/database.config';
+import { config } from 'dotenv'
+config()
+const consultantRepository = AppDataSource.getRepository(Consultant)
+const majorRepository = AppDataSource.getRepository(Major)
 
-export class ConsultantService {
-  private consultantRepository: Repository<Consultant>;
-  private majorRepository: Repository<Major>;
+class ConsultantService {
+  // private consultantRepository: Repository<Consultant>;
+  // private majorRepository: Repository<Major>;
 
-  constructor() {
-    this.consultantRepository = getRepository(Consultant);
-    this.majorRepository = getRepository(Major);
-  }
+  // constructor() {
+  //   this.consultantRepository = getRepository(Consultant);
+  //   this.majorRepository = getRepository(Major);
+  // }
 
   async createConsultant(data: {
     account_id: string;
@@ -24,28 +28,28 @@ export class ConsultantService {
     if (!major_id) throw new Error('major_id is required');
     if (yoe === undefined || yoe === null) throw new Error('yoe is required');
 
-    const major = await this.majorRepository.findOne({ where: { major_id } });
+    const major = await majorRepository.findOne({ where: { major_id } });
     if (!major) {
       throw new Error('Major not found');
     }
 
-    const consultant = this.consultantRepository.create({
+    const consultant = consultantRepository.create({
       account_id,
       major,
       yoe,
       status: status || 'active',
     });
-    return await this.consultantRepository.save(consultant);
+    return await consultantRepository.save(consultant);
   }
 
   async getAllConsultants(includeMajor: boolean = true): Promise<Consultant[]> {
-    return await this.consultantRepository.find({
+    return await consultantRepository.find({
       relations: includeMajor ? ['major'] : [],
     });
   }
 
   async getConsultantById(consultant_id: string, includeMajor: boolean = true): Promise<Consultant | null> {
-    const consultant = await this.consultantRepository.findOne({
+    const consultant = await consultantRepository.findOne({
       where: { consultant_id },
       relations: includeMajor ? ['major'] : [],
     });
@@ -56,7 +60,7 @@ export class ConsultantService {
     consultant_id: string,
     data: { account_id?: string; major_id?: string; yoe?: number; status?: string },
   ): Promise<Consultant | null> {
-    const consultant = await this.consultantRepository.findOne({ where: { consultant_id } });
+    const consultant = await consultantRepository.findOne({ where: { consultant_id } });
     if (!consultant) {
       throw new Error('Consultant not found');
     }
@@ -71,27 +75,27 @@ export class ConsultantService {
       consultant.status = data.status;
     }
     if (data.major_id) {
-      const major = await this.majorRepository.findOne({ where: { major_id: data.major_id } });
+      const major = await majorRepository.findOne({ where: { major_id: data.major_id } });
       if (!major) {
         throw new Error('Major not found');
       }
       consultant.major = major;
     }
 
-    return await this.consultantRepository.save(consultant);
+    return await consultantRepository.save(consultant);
   }
 
   async deleteConsultant(consultant_id: string): Promise<void> {
-    const consultant = await this.consultantRepository.findOne({ where: { consultant_id } });
+    const consultant = await consultantRepository.findOne({ where: { consultant_id } });
     if (!consultant) {
       throw new Error('Consultant not found');
     }
 
-    await this.consultantRepository.remove(consultant);
+    await consultantRepository.remove(consultant);
   }
 
   async getFilteredConsultants(yoe: number, majorName?: string): Promise<Consultant[]> {
-    const query = this.consultantRepository
+    const query = consultantRepository
       .createQueryBuilder('consultant')
       .leftJoinAndSelect('consultant.major', 'major')
       .where('consultant.yoe >= :yoe', { yoe });
@@ -104,5 +108,5 @@ export class ConsultantService {
   }
 }
 
-// const consultantService = new ConsultantService();
-// export default consultantService;
+const consultantService = new ConsultantService();
+export default consultantService;

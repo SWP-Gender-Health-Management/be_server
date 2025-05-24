@@ -22,7 +22,8 @@ initializeApp()
       app.use(express.json())
       // Setup routes
 
-      app.use('/account', accountRoute)
+      app.use('/account', accountRoute);
+      app.use('/consultant', consultantRoute);
 
       app.use(defaultErrorHandle)
 

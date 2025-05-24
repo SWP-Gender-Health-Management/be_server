@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { Repository } from 'typeorm';
 import { getRepository } from 'typeorm';
 import { LaborarityService } from '../models/Entity/LaborarityService.entity';
