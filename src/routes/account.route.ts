@@ -6,6 +6,7 @@ import {
   loginController,
   registerController,
   sendEmailVerifiedController,
+  updateProfileController,
   verifyEmailController
 } from '~/controllers/account.controller'
 import {
@@ -92,6 +93,6 @@ accountRoute.post('/send-email-verified', validateAccessToken, wrapRequestHandle
   gender: string
   }
 */
-accountRoute.post('/update-profile', validateUpdateProfile, wrapRequestHandler(updateProfileCOntroller))
+accountRoute.post('/update-profile', validateUpdateProfile, wrapRequestHandler(updateProfileController))
 
 export default accountRoute
